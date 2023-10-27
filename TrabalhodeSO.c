@@ -20,24 +20,25 @@ typedef struct {
 } Processo;
 
 
-int findmax(int a, int b)
-{
-    return a>b?a:b;
-}
-
-int findmin(int a, int b)
-{
-    return a<b?a:b;
+void* executa_processo(void* arg) {
+    Processo* processos = (Processo*)arg;
+    
+   processos->tat = processos->concluido - processos->Tempo_Chegada;
+    processos->Tempo_Espera= processos->tat - processos->Tempo_Execucao;
+    processos->rt = processos->Tempo_Inicio - processos->Tempo_Chegada;
+    return NULL;
 }
 
 int main(){
 	
 	srand(time(NULL));
-	
-	Processo processos[NUM_PROCESSOS];
 	int tempo_atual = 0;
+	pthread_mutex_t prontos_mutex = PTHREAD_MUTEX_INITIALIZER;
+	Processo processos[NUM_PROCESSOS];
     int processos_concluidos = 0;
-    
+    pthread_t threads[NUM_PROCESSOS];
+
+  
     for (int i = 0; i < NUM_PROCESSOS; i++) {
 	    processos[i].Tempo_Chegada = rand() % 10;
 	    processos[i].id = i;
@@ -46,13 +47,15 @@ int main(){
 	    processos[i].status = 0;
 	    printf("Processo P%d - Tempo de Chegada: %d- Tempo Execucao/Restante: %d - Status: %d\n", i,processos[i].Tempo_Chegada, processos[i].Tempo_Execucao,processos[i].status);
 	}
+	
+	
 //
 //	    for(int i=0;i<NUM_PROCESSOS;i++)
 //    {
 //        printf("\nProcesso %d Arrival Time: ",i);
 //        scanf("%d",&processos[i].Tempo_Chegada);
 //        processos[i].id = i ;
-//        processos[i].status =0;
+//       processos[i].status =0;
 //    }
 //     for(int i=0;i<NUM_PROCESSOS;i++)
 //    {
@@ -92,16 +95,16 @@ int main(){
             {
                 processos[min_index].Tempo_Inicio = tempo_atual;
                 processos[min_index].status = 1;
+                pthread_create(&threads[min_index], NULL, executa_processo, &processos[min_index]);
+
         	}
             processos[min_index].Tempo_Execucao_Restante -= 1;
             tempo_atual++; 
             if(processos[min_index].Tempo_Execucao_Restante == 0)
             {
                 processos[min_index].concluido = tempo_atual;
-                processos[min_index].tat = processos[min_index].concluido - processos[min_index].Tempo_Chegada;
-                processos[min_index].Tempo_Espera= processos[min_index].tat - processos[min_index].Tempo_Execucao;
-                processos[min_index].rt = processos[min_index].Tempo_Inicio - processos[min_index].Tempo_Chegada;
-            
+            	pthread_create(&threads[min_index], NULL, executa_processo, &processos[min_index]);
+            	printf("Tempo %d: Processo P%d concluido\n",tempo_atual, processos[min_index].id);
                 processos_concluidos++;
                 processos[min_index].status=2;
             }
