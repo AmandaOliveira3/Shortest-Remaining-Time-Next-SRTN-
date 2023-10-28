@@ -1,7 +1,5 @@
 # Shortest-Remaining-Time-Next-SRTN-
 
-O programa deve criar processos de acordo com os códigos apresentados na disciplina para
-criação de processos ( fork() ). O programa deve ser feito na linguagem C.
 O programa deverá seguir as seguintes regras:
 - Criar 10 processos com as características de cada algoritmo de escalonamento (ex: o grupo de
 Round Robin é obrigatório ter a variável quantum, o grupo de Lotery não é obrigatório ter o
@@ -17,3 +15,5 @@ CPU.
 - DICAS: cada processo ser uma struct com as devidas características/variáveis , considere os
 recursos memória RAM como sendo variáveis globais (como se fosse SO), fila de “Pronto” ser
 fila de structs, CPU ser fila de processos com um único elemento.
+---
+Desenvolvido por Amanda Oliveira e Bianca Santos Pastos
